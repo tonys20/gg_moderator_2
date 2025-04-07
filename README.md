@@ -1,6 +1,6 @@
 # IBM Granite Guardian Exercise
 
-This project implements a secure proxy for OpenAI API calls with content filtering capabilities. It uses mitmproxy to intercept and modify API calls, and NGINX for SSL termination. The moderation functionality is achieved with IBM Granite Guardian Model (**Granite Guardian 3.1 2B**
+This project implements a secure proxy for OpenAI API calls with content filtering capabilities. It uses mitmproxy to intercept and modify API calls, and NGINX for SSL termination. The moderation functionality is achieved with IBM Granite Guardian Model [(**Granite Guardian 3.1 2B**](https://huggingface.co/ibm-granite/granite-guardian-3.1-2b)
 ) using structured risk definition methods. As a consequence, each prompt and response needs to be processed multiple times to detect multiple risks. This is an area for major efficiency improvements in the future. In addition, the system uses HuggingFace Transformers instead of vLLM for Windows native support and lightweight delivery. Given the modular nature of the tool, swapping it for vLLM should be trivial.
 
 ## Table of Contents
@@ -145,6 +145,12 @@ The modified OpenAI client (`modified_openai_client.py`) is configured to connec
 
 ### Setup Steps
 
+0. **Download Model Files**
+```
+The system runs a Granite Guardian Model locally. Please downalod the model files from Hugging Face 
+and extract all files to .\granite_model_files_folder. 
+```
+   [Download Model](https://huggingface.co/ibm-granite/granite-guardian-3.1-2b) See [Folder Structure](#project-folder-structure)
 1. **Install required packages**:
 
 ```bash
