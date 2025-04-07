@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  guardian:
+    build:
+      context: .
+      dockerfile: Dockerfile.guardian
+    volumes:
+      - ./granite_model_files:/app/granite_model_files
+      - ./mitmproxy_module:/app/mitmproxy_module
+      - ./ibm_granite:/app/ibm_granite
+    ports:
+      - "8080:8080"
+    command: mitmdump -s mitmproxy_module/openai_proxy.py --listen-port 8080
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+
+  nginx:
+    image: nginx:1.26-alpine
+    volumes:
+      - ./nginx_base/nginx-1.26.3/conf/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx_base/ssl:/etc/nginx/ssl:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - guardian
+
+  client:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.client
+    volumes:
+      - ./app:/usr/src/app
+    stdin_open: true
+    tty: true
+    depends_on:
+      - nginx

@@ -1,0 +1,21 @@
+FROM pytorch/pytorch:2.2.1-cuda12.1-cudnn8-runtime
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    openssl \
+    nginx \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ibm_granite/ ./ibm_granite/
+COPY mitmproxy_module/ ./mitmproxy_module/
+COPY granite_model_files/ ./granite_model_files/
+
+EXPOSE 8080
+
+# Launch mitmdump using the moderation script
+CMD ["mitmdump", "-s", "mitmproxy_module/openai_proxy.py", "--listen-port", "8080"]

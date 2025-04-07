@@ -1,0 +1,17 @@
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /usr/src/app
+
+# Install dependencies
+COPY ./app/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy client app files
+COPY ./app .
+
+# Let user override environment with a .env file
+ENV ENV_FILE=.env
+
+# Run the OpenAI client by default
+CMD ["python", "openai_client.py"]
