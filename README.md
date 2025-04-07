@@ -16,6 +16,8 @@ This project implements a secure proxy for OpenAI API calls with content filteri
 
 ## Overview
 
+![Alt text](screenshots/server_client.png)
+
 This proxy system intercepts calls to the OpenAI API, examines the content of requests, and blocks them if they contain potentially problematic content. The system consists of:
 
 1. A mitmproxy script that intercepts and analyzes API calls
