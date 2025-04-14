@@ -58,15 +58,16 @@ class OpenAIProxy:
                 # Get risk assessment
                 flow.request.headers["X-Guardian-Scanned"] = "1"
                 results = guardian.classify_all_risks(last_user_message)
-                blocked_categories = [ category for category in results.keys()  if results[category]['label'] == 'Yes']
-
+                blocked_categories = {key: value['confidence'] for key, value in results.items() if results[key]['label'] == 'Yes'}
                 if blocked_categories:
-                    ctx.log.warn(f"Blocked due to: {blocked_categories}")
+                    highest = max(blocked_categories.items(), key=lambda item: item[1])
+                    print(highest)
+                    ctx.log.warn(f"Blocked due to: {highest}")
                     self.block_request(
                         flow,
-                        category_name=", ".join(blocked_categories),
+                        category_name=highest[0],
                         confidence=max(results[cat]["confidence"] for cat in blocked_categories),
-                        matched_terms=blocked_categories
+                        matched_terms=highest
                     )
                     return
 
@@ -120,7 +121,7 @@ class OpenAIProxy:
         response = {
             "error": {
                 "message": f"The prompt was blocked because it contained content related to:"
-                           f"\n {category_name}.",
+                           f"\n {category_name}. confidence: {confidence}",
                 "type": "content_filter",
                 "param": None,
                 "code": "content_filter",
